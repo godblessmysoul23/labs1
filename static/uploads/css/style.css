@@ -1,0 +1,16 @@
+body {
+    font-family: Arial; 
+    margin: 50px; 
+    text-align: center;
+}
+form {
+    display: inline-block; 
+    text-align: left; 
+    background: #eee; 
+    padding: 20px; 
+    border-radius: 8px;
+}
+button {
+    width: 100%; 
+    padding: 10px;
+}

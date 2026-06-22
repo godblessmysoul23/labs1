@@ -25,7 +25,8 @@ def make_hist(img_np, filename):
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
-    if request.method == 'POST':
+    #Если файл загружен
+    if request.method == 'POST': 
         file = request.files.get('file')
         try:
             period = float(request.form.get('period', 2.0))
@@ -33,9 +34,9 @@ def index():
             period = 2.0
         if file:
             img_path = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
-            file.save(img_path)
+            file.save(img_path)#Сохраняем оригинальный файл
 
-            # Магия 19 варианта: наложение синуса по осям X и Y
+            #Наложение синуса по осям X и Y(обработка изображения)
             img = Image.open(img_path).convert('RGB')
             img_np = np.array(img, dtype=np.float32)
             h, w, c = img_np.shape
@@ -43,13 +44,18 @@ def index():
             func = np.expand_dims((np.sin(X + Y) + 1.0) / 2.0, axis=2)
             res_np = np.clip(img_np * func, 0, 255).astype(np.uint8)
 
+            #Сохраняем обработнанное изображение
             res_path = os.path.join(app.config['UPLOAD_FOLDER'], 'mod_' + file.filename)
             Image.fromarray(res_np).save(res_path)
 
+            #Создаем гистрограммы для оригинального и обработанного файла
             h_orig = make_hist(img_np.astype(np.uint8), 'h_orig_' + file.filename + '.png')
             h_res = make_hist(res_np, 'h_res_' + file.filename + '.png')
 
+            #Отображаем результат
             return render_template('result.html', orig=img_path, res=res_path, ho=h_orig, hr=h_res)
+        
+    #Иначе возвращаем на главную страницу    
     return render_template('index.html')
 
 if __name__ == '__main__':

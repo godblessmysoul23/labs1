@@ -5,6 +5,8 @@ from PIL import Image
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+from PIL import Image, ImageDraw, ImageFont
+from datetime import datetime                
 
 app = Flask(__name__)
 UPLOAD_FOLDER = os.path.join('static', 'uploads')
@@ -44,9 +46,25 @@ def index():
             func = np.expand_dims((np.sin(X + Y) + 1.0) / 2.0, axis=2)
             res_np = np.clip(img_np * func, 0, 255).astype(np.uint8)
 
+            #====Добавление времени на изображение=====
+            res_img = Image.fromarray(res_np)
+
+            #Если стоит галочка на добавление времени
+            if request.form.get('add_time') == 'true':
+                # Получаем текущее время строкой
+                current_time = datetime.now().strftime("%H:%M   %d/%m/%Y ")
+                draw = ImageDraw.Draw(res_img)
+                try:
+                    font = ImageFont.truetype("arial.ttf", size=int(h * 0.04))
+                except:
+                    font = ImageFont.load_default()
+                position = (10, h - int(h * 0.05))
+                draw.text(position, current_time, fill="white", font=font)
+            # ========================================
+
             #Сохраняем обработнанное изображение
             res_path = os.path.join(app.config['UPLOAD_FOLDER'], 'mod_' + file.filename)
-            Image.fromarray(res_np).save(res_path)
+            res_img.save(res_path)
 
             #Создаем гистрограммы для оригинального и обработанного файла
             h_orig = make_hist(img_np.astype(np.uint8), 'h_orig_' + file.filename + '.png')

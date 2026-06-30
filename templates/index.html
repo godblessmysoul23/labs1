@@ -7,10 +7,11 @@
     <title>Создание</title>
 </head>
     <body>
-        <h2>Лабораторная работа 1 (Вариант 19)</h2>
+        <h2>Обработка изображения</h2>
         <form method="post" enctype="multipart/form-data">
             <label>Выбрать картинку:</label><br><input type="file" name="file" accept="image/*" required><br><br>
             <label>Период функции:</label><br><input type="number" name="period" step="0.5" value="3"><br><br>
+            <label><input type="checkbox" name="add_time" value="true">Добавить время</label>
             <button type="submit">Обработать</button>
         </form>
     </body>
